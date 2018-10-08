@@ -1,6 +1,8 @@
 - hosts: localhost
   connection: local
   gather_facts: false
+  vars_files: 
+    - vars.yml
 
   tasks:
     - name: Create new droplet
@@ -14,7 +16,7 @@
         region_id: nyc1
         ssh_key_ids: 23113083
         unique_name: yes
-        api_token: 47af7f0689523c62d1716521da79c18b3b318d05d0623bc9ee0956b6e835ed75
+        api_token: "{{ token }}"
       register: do
     - name: debug the results
       debug:  var=do

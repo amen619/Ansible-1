@@ -9,5 +9,6 @@
         state: deleted
         command: droplet
         name: test-1
+        unique_name: yes
         api_token: "{{ token }}"
         ssh_key_ids: 23113083
