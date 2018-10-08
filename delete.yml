@@ -1,0 +1,13 @@
+- name: delete all instances
+  hosts:  localhost
+  connection: local
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Connect to digital ocean and delete all instances
+      digital_ocean:
+        state: deleted
+        command: droplet
+        name: test-1
+        api_token: "{{ token }}"
+        ssh_key_ids: 23113083
