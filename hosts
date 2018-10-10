@@ -1,9 +1,9 @@
 
-
 # group of all application servers
 [app]
 10.0.0.2
 10.0.0.3
+
 # group of all database servers
 [db]
 10.0.0.4

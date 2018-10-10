@@ -1,0 +1,14 @@
+---
+- name: Playbook to install and deploy a node.js app
+  hosts: app
+  tasks:
+  - name: Configure remi repository
+    yum: name="https://rpms.remirepo.net/enterprise/remi-release-7.rpm" state=present
+  - name: Import remi repo GPG keys
+    rpm_key: key="https://rpms.remirepo.net/RPM-GPG-KEY-remi2017" state=present
+  - name: Install EPEL repository
+    yum: name=epel-release state=latest
+  - name: Install node
+    yum: name=npm state=latest enablerepo=epel
+  - name: Install forever to run node js.
+    npm: name=forever global=yes state=present
