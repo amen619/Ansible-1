@@ -1,0 +1,32 @@
+---
+- name: install apache on all application servers
+  hosts:  app
+  vars:
+    config_path: /etc/httpd/conf.d/nived.conf
+    index_path: /var/www/html/index.html
+  tasks:
+    - name: Install apache
+      yum: name=httpd state=latest
+    - name: copy all relavent files
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - src: apache/index.html.j2
+          dest: "{{ index_path }}"
+        - src: apache/nived.conf.j2
+          dest: "{{ config_path }}"
+    - name: start and enable service
+      service: name=httpd state=started enabled=true
+
+    - uri: 
+        url: http://{{ ansible_fqdn }}
+        status_code: 200
+        return_content: yes
+      register: check
+      failed_when: "'This' not in check.content"
+      ignore_errors: true
+    - debug: var=check
