@@ -1,0 +1,12 @@
+---
+- name: Install and configure lamp stack in ubuntu
+  hosts:  all
+  vars_files:
+    - vars.yml
+  pre_tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+  handlers:
+    - name: restart apache
+      service:  name=apache2 state=restarted
+  tasks:
