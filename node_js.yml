@@ -1,6 +1,8 @@
 ---
 - name: Playbook to install and deploy a node.js app
   hosts: app
+  vars:
+    node_app_location: /usr/local/opt/node
   tasks:
   - name: Configure remi repository
     yum: name="https://rpms.remirepo.net/enterprise/remi-release-7.rpm" state=present
@@ -12,3 +14,22 @@
     yum: name=npm state=latest enablerepo=epel
   - name: Install forever to run node js.
     npm: name=forever global=yes state=present
+
+# Install node.js app
+  - name: Ensure node directory is created
+    file: path={{ node_app_location }} state=directory
+  - name: Copy node.js app to server
+    copy: "src=app dest={{ node_app_location }}"
+  - name: Install app dependencies
+    npm: path={{ node_app_location }}/app
+
+# Run node.js application
+  - name: Check list of running node.js application
+    command:  forever list
+    register: forever_list
+    changed_when: false              ## since we running command module it will always show changed state, even when no change is made
+
+  - debug: var=forever_list
+  - name: Start node.js application
+    command: "forever start {{ node_app_location }}/app/app.js"
+    when: "forever_list.stdout.find('{{ node_app_location }}/app/app.js') == -1"
