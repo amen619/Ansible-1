@@ -1,0 +1,21 @@
+# _*_ mode: ruby _*_
+# vi: set ts=2 ai ft=ruby :
+
+Vagrant.configure("2") do |config|
+	config.vm.box = "ubuntu/xenial64"
+	config.ssh.insert_key = false
+	config.vm.synced_folder ".", "/vagrant", disabled: true
+	config.vm.provider	:virtualbox do |v|
+		v.memory = 256
+		v.linked_clone = true
+	end
+
+# Application server 1
+
+	config.vm.define "ubuntu-1" do |opp1|
+		opp1.vm.hostname = "ubuntu-1.opp"
+		opp1.vm.network	:private_network, ip: "10.0.0.10"
+	end
+end
+
+
