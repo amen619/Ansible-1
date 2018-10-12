@@ -16,6 +16,11 @@ Vagrant.configure("2") do |config|
 		opp1.vm.hostname = "ubuntu-1.opp"
 		opp1.vm.network	:private_network, ip: "10.0.0.10"
 	end
+
+# Provision virtual machine with playbook
+	config.vm.provision "ansible" do |ansible|
+		ansible.playbook = "lamp.yml"
+	end
 end
 
 
