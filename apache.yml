@@ -1,12 +1,34 @@
 ---
 - name: install apache on all application servers
-  hosts:  app
+  hosts:  all
   vars:
     config_path: /etc/httpd/conf.d/nived.conf
     index_path: /var/www/html/index.html
+    config_files:
+      - src: httpd_files/index.html.j2
+        dest: "{{ index_path }}" 
+      - src: httpd_files/nived.conf.j2
+        dest: "{{ config_path }}"
+  handlers:
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+        enabled: true
+
   tasks:
-    - name: Install apache
-      yum: name=httpd state=latest
+    - name: Ensure httpd and firewalld is installed
+      yum: 
+        name:
+          - httpd 
+          - firewalld
+        state: latest
+    - name: Ensure firewalld is running 
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
     - name: copy all relavent files
       template:
         src: "{{ item.src }}"
@@ -14,19 +36,13 @@
         owner: root
         group: root
         mode: 0644
-      with_items:
-        - src: apache/index.html.j2
-          dest: "{{ index_path }}"
-        - src: apache/nived.conf.j2
-          dest: "{{ config_path }}"
-    - name: start and enable service
-      service: name=httpd state=started enabled=true
+      loop: "{{ config_files }}"
+      notify: restart httpd
 
-    - uri: 
-        url: http://{{ ansible_fqdn }}
-        status_code: 200
-        return_content: yes
-      register: check
-      failed_when: "'This' not in check.content"
-      ignore_errors: true
-    - debug: var=check
+    - name: Ensure http port is open
+      firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+

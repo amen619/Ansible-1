@@ -14,10 +14,11 @@
         size_id: 512mb
         image_id: centos-7-x64
         region_id: nyc1
-        ssh_key_ids: 23113083
+        ssh_key_ids: 26665491
         unique_name: yes
-        api_token: "{{ token }}"
+        api_token: "{{ TOKEN }}"
       register: do
+
     - name: debug the results
       debug:  var=do
 
